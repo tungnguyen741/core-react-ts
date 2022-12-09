@@ -1,13 +1,9 @@
 const path = require('path');
 const { name, version, title } = require('./package.json');
 const webpack = require('webpack');
-const middleware = require("webpack-dev-middleware");
 const base64 = require('base-64');
 const utf8 = require('utf8');
-const svgToMiniDataURI = require('mini-svg-data-uri');
-const express = require("express");
 const chalk = require('chalk');
-
 
 // PLUGINS
 const HtmlWebpackPlugin = require("html-webpack-plugin"); // create html and inject output into script
@@ -15,18 +11,20 @@ const CopyWebpackPlugin = require("copy-webpack-plugin"); // copy all file publi
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin') // check import first letter uppercase
 const CircularDependencyPlugin = require('circular-dependency-plugin') // check import first letter uppercase
 const { CleanWebpackPlugin } = require('clean-webpack-plugin') // delete output when new build
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+
 // OPTIMIZATION
 const TerserPlugin = require("terser-webpack-plugin"); // minimize js
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin"); //minimize CSS
 const ImageMinimizerPlugin = require("image-minimizer-webpack-plugin");
+
 // DEVELOPMENT
 const DEV_SERVER_HTTPS = 'https';
-const DEV_SERVER_HOST = 'localhost.zalopay.vn';
+const DEV_SERVER_HOST = 'localhost.google.vn'; // for allow cors - 
+// add host in /etc/hosts:  127.0.0.1  localhost.google.vn
 const DEV_SERVER_PORT = 443;
 const MEDIA_FOLDER_DEV = '[path][name].[ext]';
+
 // BUILDING
 const BUILD_FOLDER = 'dist';
 const CSS_FOLDER = "static/css/[name].[contenthash].css";
@@ -39,7 +37,7 @@ const CSS_MODULE_NAME = `${base64.encode(utf8.encode(`${name}${version}`)).slice
 const LOCAL_SERVER = `${DEV_SERVER_HTTPS}://${DEV_SERVER_HOST}:${DEV_SERVER_PORT}`
 const PROJECT_INFO = `${name}@${chalk.white.bold(version)}`
 
-module.exports = (env, argv) => {
+module.exports = (_, argv) => {
     const devMode = argv.mode !== 'production';
     initLogger(devMode);
 
@@ -62,7 +60,7 @@ module.exports = (env, argv) => {
 
     const mainConfig = {
         entry: {
-            main: path.resolve(__dirname, 'src/index.tsx'),
+            main: path.resolve(__dirname, 'src/index.ts'),
         },
         infrastructureLogging: {
             level: 'none',
@@ -76,19 +74,11 @@ module.exports = (env, argv) => {
         module: {
             rules: [
                 {
-                    test: /\.tsx?$/,
+                    test: /\.(j|t)s?$/,
                     exclude: /node_modules/,
                     use: [
                         {
-                            loader: "babel-loader",
-                            options: {
-                                presets: [
-                                    ['@babel/preset-env', { targets: "defaults" }],
-                                    "@babel/preset-typescript",
-                                    ["@babel/preset-react", { "runtime": "automatic" }]
-                                ],
-
-                            }
+                            loader: "ts-loader",
                         }
                     ],
                 },
@@ -171,7 +161,6 @@ module.exports = (env, argv) => {
         plugins: devMode ? [
             htmlWebpackPlugin,
             new webpack.HotModuleReplacementPlugin(),
-            new ReactRefreshWebpackPlugin(),
         ] : [
             new CopyWebpackPlugin({
                 patterns: [
@@ -194,10 +183,6 @@ module.exports = (env, argv) => {
                 filename: devMode ? "[name].css" : CSS_FOLDER,
                 chunkFilename: devMode ? "[id].css" : CSS_CHUNK_FOLDER,
             }),
-            // TODO:
-            // new ExtractTextPlugin({
-            //     filename: "static/css/[name].[contenthash].css"
-            // }),
         ]
 
     };

@@ -1,8 +1,8 @@
-# Core React TS
+# Core TypeScript
 
 ## Steps building boilerplate
 
-[![N|Solid](https://external-preview.redd.it/NaV83FJX_aIV9dB93SA-ssDmNNhXAGstzhMSF3bK5Z8.jpg?width=640&crop=smart&auto=webp&s=cdd155098e0a9b61b4d52e9da24684365f731f9d)](https://nodesource.com/products/nsolid)
+[![N|Solid](https://www.anychart.com/_design/img/upload/integration/webpack-typescript-example.png)](https://github.com/tungnguyen741/core-react-ts)
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
@@ -41,8 +41,8 @@ npm install --save-dev typescript ts-loader
 
 ```sh
 "scripts": {
-  "build": "webpack --config webpack.config.js",
-  "start": "webpack serve --open"
+   "build": "webpack --config webpack.config.js --mode=production",
+    "start": "sudo webpack serve --mode=development"
 }
 ```
 
@@ -56,16 +56,20 @@ touch tsconfig.json
 
 ```sh
 {
-  "compilerOptions": {
-    "outDir": "./dist/",
-    "noImplicitAny": true,
-    "module": "es6",
-    "target": "es5",
-    "jsx": "react",
-    "allowJs": true,
-    "moduleResolution": "node"
+    "compilerOptions": {
+      "sourceMap": true,
+      "noImplicitAny": false,
+      "module": "Esnext",
+      "target": "es5",
+      "allowJs": true,
+      "moduleResolution": "node",
+      "outDir": "./dist",
+      "rootDir": ".",
+      "baseUrl": ".",
+      "allowSyntheticDefaultImports":true,
+    },
+    "include": ["src"]
   }
-}
 ```
 
 - outDir: ...
