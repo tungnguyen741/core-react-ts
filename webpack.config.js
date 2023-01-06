@@ -7,7 +7,8 @@ const utf8 = require('utf8');
 const svgToMiniDataURI = require('mini-svg-data-uri');
 const express = require("express");
 const chalk = require('chalk');
-
+const apiMocker = require('connect-api-mocker');
+const mockData = require('./mock/GET.json')
 
 // PLUGINS
 const HtmlWebpackPlugin = require("html-webpack-plugin"); // create html and inject output into script
@@ -45,6 +46,11 @@ module.exports = (env, argv) => {
 
     const devServerConfig = [devMode && {
         devServer: {
+            proxy: {
+                '/api/bypass-example': {
+                  bypass: (req, res) => res.json(mockData),
+                },
+              },
             static: path.resolve(__dirname, './public'),
             open: {
                 app: {
@@ -130,8 +136,7 @@ module.exports = (env, argv) => {
                             },
                         },
                     ],
-                },
-
+                }
             ],
         },
         resolve: {
@@ -208,43 +213,43 @@ module.exports = (env, argv) => {
                 chunks: 'all',
             },
             minimizer: [
-                new ImageMinimizerPlugin({
-                    minimizer: {
-                        implementation: ImageMinimizerPlugin.imageminMinify,
-                        options: {
-                            // Lossless optimization with custom option
-                            // Feel free to experiment with options for better result for you
-                            plugins: [
-                                ["gifsicle", { interlaced: true }],
-                                ["jpegtran", { progressive: true }],
-                                ["optipng", { optimizationLevel: 7 }],
-                                // Svgo configuration here https://github.com/svg/svgo#configuration
-                                [
-                                    "svgo",
-                                    {
-                                        plugins: [
-                                            {
-                                                name: "preset-default",
-                                                params: {
-                                                    overrides: {
-                                                        removeViewBox: false,
-                                                        addAttributesToSVGElement: {
-                                                            params: {
-                                                                attributes: [
-                                                                    { xmlns: "http://www.w3.org/2000/svg" },
-                                                                ],
-                                                            },
-                                                        },
-                                                    },
-                                                },
-                                            },
-                                        ],
-                                    },
-                                ],
-                            ],
-                        },
-                    },
-                }),
+                // new ImageMinimizerPlugin({
+                //     minimizer: {
+                //         implementation: ImageMinimizerPlugin.imageminMinify,
+                //         options: {
+                //             // Lossless optimization with custom option
+                //             // Feel free to experiment with options for better result for you
+                //             plugins: [
+                //                 ["gifsicle", { interlaced: true }],
+                //                 ["jpegtran", { progressive: true }],
+                //                 ["optipng", { optimizationLevel: 7 }],
+                //                 // Svgo configuration here https://github.com/svg/svgo#configuration
+                //                 [
+                //                     "svgo",
+                //                     {
+                //                         plugins: [
+                //                             {
+                //                                 name: "preset-default",
+                //                                 params: {
+                //                                     overrides: {
+                //                                         removeViewBox: false,
+                //                                         addAttributesToSVGElement: {
+                //                                             params: {
+                //                                                 attributes: [
+                //                                                     { xmlns: "http://www.w3.org/2000/svg" },
+                //                                                 ],
+                //                                             },
+                //                                         },
+                //                                     },
+                //                                 },
+                //                             },
+                //                         ],
+                //                     },
+                //                 ],
+                //             ],
+                //         },
+                //     },
+                // }),
             ]
         },
     };
